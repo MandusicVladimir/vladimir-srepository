@@ -1,0 +1,117 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="author" content="colorlib.com" />
+    <link href="https://fonts.googleapis.com/css?family=Poppins:400,600,700"
+          rel="stylesheet" />
+    <link href="./css/main.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="cover-spin"></div>
+    <div class="s010">
+        <form>
+            <div class="inner-form">
+                <div class="basic-search">
+                    <div class="input-field">
+                        <input id="title" type="text" placeholder="Type movie title" />
+                        <div class="icon-wrap">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                 width="24"
+                                 height="24"
+                                 viewBox="0 0 24 24">
+                                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <h3 id="errorMsg"
+                    style="
+              color: red;
+              font-weight: bold;
+              width: 100%;
+              display: none;
+              text-align: center;
+            ">
+                    You must enter movie title!
+                </h3>
+                <div class="row third">
+                    <div class="input-field">
+                        <div class="group-btn" style="text-align: center; margin-top: 10px;">
+                            <button class="btn-search" id="searchBtn">SEARCH</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    </form>
+    </div>
+    <h2 class="txt-result" id="result-heading">Results</h2>
+    <div class="results" id="resultBox"></div>
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"
+            integrity="sha256-xNzN2a4ltkB44Mc/Jz3pT4iU1cmeR0FkXs4pru/JxaQ="
+            crossorigin="anonymous"></script>
+    <script>$("#searchBtn").click(function (event) {
+        event.preventDefault();
+        let title = $("#title").val().trim();
+        if (title == undefined || title.trim() == "") {
+          $("#errorMsg").css("display", "block");
+          return;
+        }
+
+        $("#result-heading").css("display", "none");
+        $("#resultBox").empty();
+        $.ajax({
+url: "https://www.omdbapi.com/?s=" + title + "&apikey=d3ff8729",
+type: "GET",
+beforeSend: function () {
+$("#cover-spin").css("display", "block");
+},
+success: function (response) {
+
+
+if ($("#errorMsg").css("display") == "block") {
+$("#errorMsg").css("display", "none");
+}
+$("#cover-spin").css("display", "none");
+
+if(response.Search != undefined){
+$("#result-heading").css("display", "block");
+const movies = response.Search.map((movie) => {
+return `<div class="item"> <h3>${movie.Title}</h3> <div class="imgwrap"><img src=${movie.Poster} alt="Movie image"/> </div> <h3>Year : ${movie.Year}</h3> </div>`;
+}).join("");
+var app = document.getElementById("resultBox");
+app.innerHTML = movies;
+}else {
+if ($("#errorMsg").css("display") == "block") {
+$("#errorMsg").text("No results, please try with another title");
+}
+else {
+$("#errorMsg").css("display", "block");
+$("#errorMsg").text("No results, please try with another title");
+}
+}
+
+},
+error: function (response) {
+
+$("#cover-spin").css("display", "none");
+if ($("#errorMsg").css("display") == "block") {
+$("#errorMsg").text("No results, please try with another title");
+}
+else {
+$("#errorMsg").css("display", "block");
+$("#errorMsg").text("No results, please try with another title");
+}
+
+},
+});
+      });</script>
+</body>
+<!-- This templates was made by Colorlib (https://colorlib.com) -->
+</html>
